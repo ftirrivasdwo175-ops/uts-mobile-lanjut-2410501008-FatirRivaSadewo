@@ -3,16 +3,10 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Text, View } from "react-native";
 
+import HomeScreen from "../screens/HomeScreen";
+
 const MainTabs = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
-
-function LibraryHome() {
-  return (
-    <View>
-      <Text>Library Home</Text>
-    </View>
-  );
-}
 
 function BookDetailView() {
   return (
@@ -42,7 +36,7 @@ function ProfileInfo() {
   return (
     <View>
       <Text>About Me</Text>
-      <Text>Fatir Riva Sadewo- 2410501008</Text>
+      <Text>Fatir - 2410501008</Text>
     </View>
   );
 }
@@ -50,7 +44,7 @@ function ProfileInfo() {
 function LibraryStack() {
   return (
     <RootStack.Navigator>
-      <RootStack.Screen name="Library" component={LibraryHome} />
+      <RootStack.Screen name="Library" component={HomeScreen} />
       <RootStack.Screen name="DetailBook" component={BookDetailView} />
     </RootStack.Navigator>
   );
