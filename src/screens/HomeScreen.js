@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
-import { View, Text, FlatList, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorState, setErrorState] = useState(false);
@@ -47,9 +53,13 @@ export default function HomeScreen() {
         data={books}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
-          <View style={{ padding: 10, borderBottomWidth: 1 }}>
-            <Text style={{ fontSize: 16 }}>{item.title}</Text>
-          </View>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("DetailBook", { book: item })}
+          >
+            <View style={{ padding: 10, borderBottomWidth: 1 }}>
+              <Text style={{ fontSize: 16 }}>{item.title}</Text>
+            </View>
+          </TouchableOpacity>
         )}
       />
     </View>

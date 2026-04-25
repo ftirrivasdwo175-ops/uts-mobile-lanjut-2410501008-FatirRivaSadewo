@@ -4,17 +4,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Text, View } from "react-native";
 
 import HomeScreen from "../screens/HomeScreen";
+import DetailScreen from "../screens/DetailScreen";
 
 const MainTabs = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
-
-function BookDetailView() {
-  return (
-    <View>
-      <Text>Book Detail</Text>
-    </View>
-  );
-}
 
 function SavedCollection() {
   return (
@@ -45,7 +38,7 @@ function LibraryStack() {
   return (
     <RootStack.Navigator>
       <RootStack.Screen name="Library" component={HomeScreen} />
-      <RootStack.Screen name="DetailBook" component={BookDetailView} />
+      <RootStack.Screen name="DetailBook" component={DetailScreen} />
     </RootStack.Navigator>
   );
 }
