@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -6,11 +6,14 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
+import { FavoriteContext } from "../context/FavoriteContext";
 
 export default function HomeScreen({ navigation }) {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorState, setErrorState] = useState(false);
+
+  const { favoriteBooks, setFavoriteBooks } = useContext(FavoriteContext);
 
   const fetchBooks = async () => {
     try {
@@ -30,38 +33,28 @@ export default function HomeScreen({ navigation }) {
     fetchBooks();
   }, []);
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-        <Text>Loading data...</Text>
-      </View>
-    );
-  }
-
-  if (errorState) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Gagal mengambil data</Text>
-      </View>
-    );
-  }
+  if (loading) return <ActivityIndicator size="large" />;
+  if (errorState) return <Text>Error</Text>;
 
   return (
-    <View style={{ flex: 1, padding: 10 }}>
-      <FlatList
-        data={books}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
+    <FlatList
+      data={books}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item }) => (
+        <View style={{ padding: 10, borderBottomWidth: 1 }}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("DetailBook", { book: item })}
+            onPress={() => navigation.navigate("Detail", { book: item })}
           >
-            <View style={{ padding: 10, borderBottomWidth: 1 }}>
-              <Text style={{ fontSize: 16 }}>{item.title}</Text>
-            </View>
+            <Text>{item.title}</Text>
           </TouchableOpacity>
-        )}
-      />
-    </View>
+
+          <TouchableOpacity
+            onPress={() => setFavoriteBooks([...favoriteBooks, item])}
+          >
+            <Text style={{ color: "blue" }}>Tambah ke Favorit</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    />
   );
 }
