@@ -12,7 +12,6 @@ import SearchScreen from "../screens/SearchScreen";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// STACK (BEDAIN NAMA BIAR GA ERROR)
 function HomeStack() {
   return (
     <Stack.Navigator>
