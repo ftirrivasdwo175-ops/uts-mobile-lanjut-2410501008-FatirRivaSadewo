@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Image,
   RefreshControl,
+  ToastAndroid,
 } from "react-native";
 import { FavoriteContext } from "../context/FavoriteContext";
 
@@ -31,12 +32,10 @@ export default function HomeScreen({ navigation }) {
     try {
       setErrorState(false);
 
-      let url = "";
-      if (type === "trending") {
-        url = "https://openlibrary.org/trending/daily.json";
-      } else {
-        url = `https://openlibrary.org/subjects/${type}.json`;
-      }
+      const url =
+        type === "trending"
+          ? "https://openlibrary.org/trending/daily.json"
+          : `https://openlibrary.org/subjects/${type}.json`;
 
       const res = await fetch(url);
       const data = await res.json();
@@ -67,13 +66,7 @@ export default function HomeScreen({ navigation }) {
     return (
       <View style={{ padding: 20 }}>
         <Text>Terjadi kesalahan, cek koneksi internet</Text>
-
-        <TouchableOpacity
-          onPress={() => {
-            setRefreshing(true);
-            fetchBooks(activeTab);
-          }}
-        >
+        <TouchableOpacity onPress={() => fetchBooks(activeTab)}>
           <Text style={{ color: "blue", marginTop: 10 }}>Coba Lagi</Text>
         </TouchableOpacity>
       </View>
@@ -86,6 +79,7 @@ export default function HomeScreen({ navigation }) {
         Katalog Buku
       </Text>
 
+      {/* TAB */}
       <View style={{ flexDirection: "row", marginBottom: 10 }}>
         {tabs.map((tab) => (
           <TouchableOpacity
@@ -122,11 +116,17 @@ export default function HomeScreen({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         renderItem={({ item }) => {
+          // COVER FIX
           const coverId = item.cover_id || item.cover_i;
-
           const coverUrl = coverId
             ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
             : null;
+
+          // AUTHOR FIX
+          const author =
+            item.authors?.[0]?.name ||
+            item.author_name?.[0] ||
+            "Unknown Author";
 
           return (
             <View
@@ -139,6 +139,7 @@ export default function HomeScreen({ navigation }) {
                 elevation: 2,
               }}
             >
+              {/* COVER (ROUNDED FIX) */}
               {coverUrl ? (
                 <Image
                   source={{ uri: coverUrl }}
@@ -161,21 +162,36 @@ export default function HomeScreen({ navigation }) {
                 />
               )}
 
+              {/* TEXT */}
               <View style={{ flex: 1 }}>
                 <TouchableOpacity
                   onPress={() => navigation.navigate("Detail", { book: item })}
                 >
                   <Text style={{ fontWeight: "bold" }}>{item.title}</Text>
 
-                  <Text style={{ color: "gray", marginTop: 5 }}>
-                    {item.authors && item.authors[0]?.name
-                      ? item.authors[0].name
-                      : "Unknown Author"}
-                  </Text>
+                  <Text style={{ color: "gray", marginTop: 5 }}>{author}</Text>
                 </TouchableOpacity>
 
+                {/* FAVORIT + TOAST */}
                 <TouchableOpacity
-                  onPress={() => setFavoriteBooks([...favoriteBooks, item])}
+                  onPress={() => {
+                    const exists = favoriteBooks.find(
+                      (b) => b.key === item.key,
+                    );
+
+                    if (!exists) {
+                      setFavoriteBooks([...favoriteBooks, item]);
+                      ToastAndroid.show(
+                        "Buku ditambahkan ke favorit",
+                        ToastAndroid.SHORT,
+                      );
+                    } else {
+                      ToastAndroid.show(
+                        "Sudah ada di favorit",
+                        ToastAndroid.SHORT,
+                      );
+                    }
+                  }}
                 >
                   <Text style={{ color: "blue", marginTop: 6, fontSize: 12 }}>
                     Simpan ke Favorit

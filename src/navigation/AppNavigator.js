@@ -1,13 +1,13 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import HomeScreen from "../screens/HomeScreen";
 import DetailScreen from "../screens/DetailScreen";
 import FavoritesScreen from "../screens/FavoritesScreen";
 import SearchScreen from "../screens/SearchScreen";
+import AboutScreen from "../screens/AboutScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -15,19 +15,9 @@ const Stack = createNativeStackNavigator();
 function HomeStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Detail" component={DetailScreen} />
     </Stack.Navigator>
-  );
-}
-
-function AboutScreen() {
-  return (
-    <View style={{ padding: 20 }}>
-      <Text>Nama  : Fatir Riva Sadewo</Text>
-      <Text>NIM     : 2410501008</Text>
-      <Text>Kelas   : A</Text>
-    </View>
   );
 }
 

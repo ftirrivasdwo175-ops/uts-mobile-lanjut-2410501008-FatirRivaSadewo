@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -7,46 +7,53 @@ import {
   TouchableOpacity,
   Image,
   RefreshControl,
+  ToastAndroid,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { FavoriteContext } from "../context/FavoriteContext";
 
 export default function SearchScreen({ navigation }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
+  const [searched, setSearched] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  const { favoriteBooks, setFavoriteBooks } = useContext(FavoriteContext);
 
   const searchBooks = async () => {
     if (query.length < 3) {
       setResults([]);
+      setSearched(false);
       return;
     }
 
     try {
-      const response = await fetch(
-        `https://openlibrary.org/search.json?q=${query}`,
-      );
-      const data = await response.json();
-      setResults(data.docs);
+      const res = await fetch(`https://openlibrary.org/search.json?q=${query}`);
+      const data = await res.json();
+
+      setResults(data.docs || []);
+      setSearched(true);
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    if (query === "") {
-      setResults([]);
-    }
-  }, [query]);
-
   const onRefresh = () => {
     setRefreshing(true);
-    setResults([]);
     setQuery("");
+    setResults([]);
+    setSearched(false);
     setRefreshing(false);
   };
 
   return (
     <View style={{ flex: 1, padding: 10 }}>
+      {/* JUDUL */}
+      <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>
+        Search Book
+      </Text>
+
+      {/* SEARCH BAR */}
       <View
         style={{
           flexDirection: "row",
@@ -69,9 +76,17 @@ export default function SearchScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
+      {/* EMPTY STATE */}
+      {searched && results.length === 0 && (
+        <Text style={{ textAlign: "center", marginTop: 20 }}>
+          Hasil tidak ditemukan
+        </Text>
+      )}
+
+      {/* LIST */}
       <FlatList
         data={results}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item, i) => i.toString()}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -80,56 +95,75 @@ export default function SearchScreen({ navigation }) {
             ? `https://covers.openlibrary.org/b/id/${item.cover_i}-M.jpg`
             : null;
 
+          const author = item.author_name?.[0] || "Unknown Author";
+
           return (
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Home", {
-                  screen: "Detail",
-                  params: { book: item },
-                })
-              }
+            <View
+              style={{
+                flexDirection: "row",
+                backgroundColor: "#fff",
+                padding: 10,
+                borderRadius: 10,
+                marginBottom: 10,
+                elevation: 2,
+              }}
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  backgroundColor: "#fff",
-                  padding: 10,
-                  borderRadius: 10,
-                  marginBottom: 10,
-                  elevation: 2,
-                }}
-              >
-                {coverUrl ? (
-                  <Image
-                    source={{ uri: coverUrl }}
-                    style={{
-                      width: 60,
-                      height: 90,
-                      borderRadius: 6,
-                      marginRight: 10,
-                    }}
-                  />
-                ) : (
-                  <View
-                    style={{
-                      width: 60,
-                      height: 90,
-                      backgroundColor: "#ccc",
-                      borderRadius: 6,
-                      marginRight: 10,
-                    }}
-                  />
-                )}
+              {/* COVER (FIX ROUNDED) */}
+              {coverUrl ? (
+                <Image
+                  source={{ uri: coverUrl }}
+                  style={{
+                    width: 60,
+                    height: 90,
+                    borderRadius: 6,
+                    marginRight: 10,
+                  }}
+                />
+              ) : (
+                <View
+                  style={{
+                    width: 60,
+                    height: 90,
+                    backgroundColor: "#ccc",
+                    borderRadius: 6,
+                    marginRight: 10,
+                  }}
+                />
+              )}
 
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontWeight: "bold" }}>{item.title}</Text>
+              {/* TEXT */}
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontWeight: "bold" }}>{item.title}</Text>
 
-                  <Text style={{ color: "gray", marginTop: 5 }}>
-                    {item.author_name ? item.author_name[0] : "Unknown Author"}
+                <Text style={{ color: "gray", marginTop: 5 }}>{author}</Text>
+
+                {/* FAVORIT */}
+                <TouchableOpacity
+                  onPress={() => {
+                    const exists = favoriteBooks.find(
+                      (b) => b.key === item.key,
+                    );
+
+                    if (!exists) {
+                      setFavoriteBooks([...favoriteBooks, item]);
+                      ToastAndroid.show(
+                        "Buku ditambahkan ke favorit",
+                        ToastAndroid.SHORT,
+                      );
+                    } else {
+                      ToastAndroid.show(
+                        "Sudah ada di favorit",
+                        ToastAndroid.SHORT,
+                      );
+                    }
+                  }}
+                >
+                  <Text style={{ color: "blue", marginTop: 6 }}>
+                    Simpan ke Favorit
                   </Text>
-                </View>
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+            </View>
           );
         }}
       />

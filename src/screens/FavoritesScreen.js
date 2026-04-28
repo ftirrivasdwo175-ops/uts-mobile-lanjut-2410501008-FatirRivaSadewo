@@ -1,13 +1,31 @@
 import { useContext } from "react";
-import { FlatList, Text, View, TouchableOpacity, Image } from "react-native";
+import {
+  FlatList,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  Alert,
+} from "react-native";
 import { FavoriteContext } from "../context/FavoriteContext";
 
 export default function FavoritesScreen({ navigation }) {
   const { favoriteBooks, setFavoriteBooks } = useContext(FavoriteContext);
 
   const handleDelete = (indexToDelete) => {
-    const updated = favoriteBooks.filter((_, i) => i !== indexToDelete);
-    setFavoriteBooks(updated);
+    Alert.alert("Hapus Favorit", "Yakin ingin menghapus buku ini?", [
+      {
+        text: "Batal",
+        style: "cancel",
+      },
+      {
+        text: "Hapus",
+        onPress: () => {
+          const updated = favoriteBooks.filter((_, i) => i !== indexToDelete);
+          setFavoriteBooks(updated);
+        },
+      },
+    ]);
   };
 
   return (
@@ -15,11 +33,15 @@ export default function FavoritesScreen({ navigation }) {
       data={favoriteBooks}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({ item, index }) => {
+        // FIX COVER
         const coverId = item.cover_id || item.cover_i;
-
         const coverUrl = coverId
           ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
           : null;
+
+        // FIX AUTHOR
+        const author =
+          item.authors?.[0]?.name || item.author_name?.[0] || "Unknown Author";
 
         return (
           <View
@@ -32,6 +54,7 @@ export default function FavoritesScreen({ navigation }) {
               elevation: 2,
             }}
           >
+            {/* COVER */}
             {coverUrl ? (
               <Image
                 source={{ uri: coverUrl }}
@@ -54,6 +77,7 @@ export default function FavoritesScreen({ navigation }) {
               />
             )}
 
+            {/* TEXT */}
             <View style={{ flex: 1 }}>
               <TouchableOpacity
                 onPress={() =>
@@ -65,15 +89,18 @@ export default function FavoritesScreen({ navigation }) {
               >
                 <Text style={{ fontWeight: "bold" }}>{item.title}</Text>
 
-                <Text style={{ color: "gray", marginTop: 5 }}>
-                  {item.authors && item.authors[0]?.name
-                    ? item.authors[0].name
-                    : "Unknown Author"}
-                </Text>
+                <Text style={{ color: "gray", marginTop: 5 }}>{author}</Text>
               </TouchableOpacity>
 
+              {/* DELETE */}
               <TouchableOpacity onPress={() => handleDelete(index)}>
-                <Text style={{ color: "red", marginTop: 6, fontSize: 12 }}>
+                <Text
+                  style={{
+                    color: "red",
+                    marginTop: 6,
+                    fontSize: 12,
+                  }}
+                >
                   Hapus dari Favorit
                 </Text>
               </TouchableOpacity>
