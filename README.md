@@ -34,16 +34,21 @@ npm install
 npx expo start
 
 ## 5. Screenshot
-Home Screen :
-![Home](screenshots/home.png)
-Search Screen :
-![Search](screenshots/search.png)
-Favorites Screen :
-![Favorites](screenshots/favorites.png)
-Detail Screen :
-![Detail](screenshots/detail.png)
-About Screen :
-![About](screenshots/about.png)
+
+Home Screen :  
+![Home](Screenshot/HomeScreen.jpeg)
+
+Search Screen :  
+![Search](Screenshot/SearchScreen.jpeg)
+
+Favorites Screen :  
+![Favorites](Screenshot/FavoriteScreen.jpeg)
+
+Detail Screen :  
+![Detail](Screenshot/DetailScreen.jpeg)
+
+About Screen :  
+![About](Screenshot/AboutScreen.jpeg)
 
 ## 6. Video Demo 
 Google Drive: https://drive.google.com/drive/folders/16B9QZ4q_kT45hQ5uuAwg1AYhyUsvEAiX?usp=drive_link
