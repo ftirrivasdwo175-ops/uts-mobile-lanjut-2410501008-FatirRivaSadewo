@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   Image,
   RefreshControl,
-  ToastAndroid,
 } from "react-native";
 import { FavoriteContext } from "../context/FavoriteContext";
 
@@ -18,7 +17,7 @@ export default function HomeScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState("trending");
 
-  const { favoriteBooks, setFavoriteBooks } = useContext(FavoriteContext);
+  const { favoriteBooks } = useContext(FavoriteContext);
 
   const tabs = [
     { label: "Trending", value: "trending" },
@@ -79,7 +78,6 @@ export default function HomeScreen({ navigation }) {
         Katalog Buku
       </Text>
 
-      {/* TAB */}
       <View style={{ flexDirection: "row", marginBottom: 10 }}>
         {tabs.map((tab) => (
           <TouchableOpacity
@@ -116,30 +114,32 @@ export default function HomeScreen({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         renderItem={({ item }) => {
-          // COVER FIX
           const coverId = item.cover_id || item.cover_i;
           const coverUrl = coverId
             ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
             : null;
 
-          // AUTHOR FIX
           const author =
             item.authors?.[0]?.name ||
             item.author_name?.[0] ||
             "Unknown Author";
+
+          const shortDesc =
+            item.subject && item.subject.length > 0
+              ? item.subject.slice(0, 3).join(", ")
+              : "Buku populer pilihan";
 
           return (
             <View
               style={{
                 flexDirection: "row",
                 backgroundColor: "#fff",
-                padding: 10,
+                padding: 12,
                 borderRadius: 10,
                 marginBottom: 10,
                 elevation: 2,
               }}
             >
-              {/* COVER (ROUNDED FIX) */}
               {coverUrl ? (
                 <Image
                   source={{ uri: coverUrl }}
@@ -162,39 +162,43 @@ export default function HomeScreen({ navigation }) {
                 />
               )}
 
-              {/* TEXT */}
               <View style={{ flex: 1 }}>
                 <TouchableOpacity
                   onPress={() => navigation.navigate("Detail", { book: item })}
                 >
-                  <Text style={{ fontWeight: "bold" }}>{item.title}</Text>
+                  <Text style={{ fontWeight: "bold", fontSize: 14 }}>
+                    {item.title}
+                  </Text>
 
-                  <Text style={{ color: "gray", marginTop: 5 }}>{author}</Text>
-                </TouchableOpacity>
+                  <Text
+                    style={{
+                      color: "gray",
+                      marginTop: 4,
+                      fontSize: 12,
+                    }}
+                  >
+                    {author}
+                  </Text>
 
-                {/* FAVORIT + TOAST */}
-                <TouchableOpacity
-                  onPress={() => {
-                    const exists = favoriteBooks.find(
-                      (b) => b.key === item.key,
-                    );
+                  <Text
+                    style={{
+                      color: "#888",
+                      marginTop: 2,
+                      fontSize: 11,
+                    }}
+                  >
+                    Tahun: {item.first_publish_year || "-"}
+                  </Text>
 
-                    if (!exists) {
-                      setFavoriteBooks([...favoriteBooks, item]);
-                      ToastAndroid.show(
-                        "Buku ditambahkan ke favorit",
-                        ToastAndroid.SHORT,
-                      );
-                    } else {
-                      ToastAndroid.show(
-                        "Sudah ada di favorit",
-                        ToastAndroid.SHORT,
-                      );
-                    }
-                  }}
-                >
-                  <Text style={{ color: "blue", marginTop: 6, fontSize: 12 }}>
-                    Simpan ke Favorit
+                  <Text
+                    style={{
+                      color: "#666",
+                      marginTop: 4,
+                      fontSize: 11,
+                    }}
+                    numberOfLines={2}
+                  >
+                    {shortDesc}
                   </Text>
                 </TouchableOpacity>
               </View>
