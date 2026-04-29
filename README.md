@@ -7,13 +7,25 @@ Kelas   : B
 Tema C: BookShelf - Katalog Buku
 
 ## 3. Tech Stack
-- React Native (Expo)
-- React Navigation
-- Context API
-- Open Library API
-Versi:
-- expo: 54.0.33
-- react-native: 0.81.5
+Aplikasi ini dibangun menggunakan teknologi berikut:
+- **React Native (Expo)** — framework untuk membangun aplikasi mobile
+- **JavaScript** — bahasa pemrograman utama yang digunakan
+- **React Navigation** — untuk navigasi antar screen (Stack & Bottom Tabs)
+- **Fetch API** — untuk mengambil data dari API eksternal
+- **Context API** — untuk state management (fitur favorit)
+- **OpenLibrary API** — sebagai sumber data buku
+### Dependencies utama:
+- @react-navigation/native
+- @react-navigation/native-stack
+- @react-navigation/bottom-tabs
+- react-native-screens
+- react-native-safe-area-context
+- react-native-gesture-handler
+- react-native-reanimated
+- @expo/vector-icons
+### Versi:
+- Expo: 54.0.33
+- React Native: 0.81.5
 
 ## 4. Cara Install & Run
 git clone https://github.com/ftirrivasdwo175-ops/uts-mobile-lanjut-2410501008-FatirRivaSadewo
